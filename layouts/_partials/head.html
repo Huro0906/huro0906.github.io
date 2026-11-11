@@ -23,3 +23,7 @@
 <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">
 {{- $js := resources.Get "js/theme-toggle.js" | minify | fingerprint }}
 <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
+{{- if .IsPage }}
+{{- $toc := resources.Get "js/toc.js" | minify | fingerprint }}
+<script src="{{ $toc.RelPermalink }}" integrity="{{ $toc.Data.Integrity }}" defer></script>
+{{- end }}

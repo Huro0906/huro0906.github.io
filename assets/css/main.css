@@ -9,6 +9,8 @@
   --yellow: #eeff5a;
   --sky: #99e1ff;
   --on-accent: #000;
+  --code-bg: #e1e2e7;
+  --code-ink: #3760bf;
 
   --font-pixel: 'Galmuri11', 'Pretendard Variable', sans-serif;
   --font-body: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
@@ -33,6 +35,8 @@
   --paper: #000;
   --muted: #7a776f;
   --line: #1d1b15;
+  --code-bg: #1a1b26;
+  --code-ink: #c0caf5;
 
   color-scheme: dark;
 }
@@ -468,13 +472,38 @@ h4 {
   line-height: 1.4;
 }
 
+.toc {
+  padding: 16px 24px;
+}
+
+.toc summary {
+  display: flex;
+  cursor: pointer;
+  list-style: none;
+}
+
+.toc summary::-webkit-details-marker {
+  display: none;
+}
+
+.toc summary::after {
+  content: "+";
+  margin-left: auto;
+}
+
+.toc details[open] > summary::after {
+  content: "-";
+}
+
 .toc ul {
   margin: 8px 0 0;
-  padding-left: 20px;
+  padding: 0;
+  list-style: none;
 }
 
 .toc ul ul {
   margin-top: 0;
+  padding-left: 12px;
 }
 
 .toc li {
@@ -482,11 +511,59 @@ h4 {
 }
 
 .toc a {
+  display: block;
+  padding: 2px 8px;
+  border: 1px solid transparent;
+  font-size: 14px;
+  line-height: 1.5;
   text-decoration: none;
 }
 
 .toc a:hover {
-  text-decoration: underline;
+  border-color: var(--ink);
+}
+
+.toc a.is-active {
+  background: var(--yellow);
+  color: var(--on-accent);
+  border-color: var(--ink);
+}
+
+/* 넓은 화면에서는 목차를 본문 오른쪽 열에 고정합니다. 좁은 화면에서는 본문 위의 접이식 목차로 남습니다. */
+@media (min-width: 1100px) {
+  main.container:has(> .post-layout.has-toc) {
+    max-width: 1160px;
+  }
+
+  .post-layout.has-toc {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 240px;
+    column-gap: 24px;
+    align-items: start;
+  }
+
+  .post-layout.has-toc > :not(.toc) {
+    grid-column: 1;
+  }
+
+  .post-layout.has-toc > .toc {
+    position: sticky;
+    top: 24px;
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+  }
+
+  .toc summary {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .toc summary::after,
+  .toc details[open] > summary::after {
+    content: none;
+  }
 }
 
 .prose {
@@ -584,10 +661,10 @@ pre {
   font-family: var(--font-mono);
 }
 
-.prose :not(pre) > code {
+:not(pre) > code {
   padding: 1px 4px;
-  background: var(--yellow);
-  color: var(--on-accent);
+  background: var(--code-bg);
+  color: var(--code-ink);
   font-size: 0.875em;
 }
 

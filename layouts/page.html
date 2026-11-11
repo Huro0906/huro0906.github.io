@@ -1,5 +1,6 @@
 {{ define "main" }}
-<article class="post">
+{{- $toc := and (eq .Section "posts") (findRE `<h2[\s>]` .Content 1) }}
+<div class="post-layout{{ if $toc }} has-toc{{ end }}">
   <header class="card post-header pixel-corners">
     <h1 class="post-title">{{ .Title }}</h1>
     {{- if eq .Section "posts" }}
@@ -17,15 +18,17 @@
     {{- end }}
     {{- end }}
   </header>
-  {{- if and (eq .Section "posts") (findRE `<h2[\s>]` .Content 1) }}
-  <nav class="card toc" aria-label="목차">
-    <p class="label">목차</p>
-    {{ .TableOfContents }}
+  {{- if $toc }}
+  <nav class="card toc" aria-label="목차" data-toc>
+    <details>
+      <summary class="label">목차</summary>
+      {{ .TableOfContents }}
+    </details>
   </nav>
   {{- end }}
-  <div class="card prose">
+  <article class="post card prose">
     {{ .Content }}
-  </div>
+  </article>
   {{- if eq .Section "posts" }}
   {{- $older := .PrevInSection }}
   {{- $newer := .NextInSection }}
@@ -40,5 +43,5 @@
   </nav>
   {{- end }}
   {{- end }}
-</article>
+</div>
 {{ end }}
