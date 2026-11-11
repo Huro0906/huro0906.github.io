@@ -1,24 +1,23 @@
-<header class="site-header">
-  <div class="container header-inner">
-    <a class="brand" href="{{ "/" | relURL }}">
-      <img class="logo" src="{{ "images/logo.svg" | relURL }}" width="48" height="48" alt="">
-      <span class="brand-text">
-        <span class="brand-title">{{ site.Title }}</span>
-        {{- with site.Params.subtitle }}<span class="brand-subtitle">{{ . }}</span>{{ end }}
-      </span>
-    </a>
-    <nav class="site-nav" aria-label="주 메뉴">
-      <ul>
-        {{- $current := . }}
-        {{- range site.Menus.main }}
-        {{- $active := or ($current.IsMenuCurrent "main" .) ($current.HasMenuCurrent "main" .) }}
-        {{- with .Page }}{{ if and (not $active) (not .IsHome) }}{{ $active = $current.IsDescendant . }}{{ end }}{{ end }}
-        <li><a href="{{ .URL }}"{{ if $active }} aria-current="page"{{ end }}>{{ .Name }}</a></li>
-        {{- end }}
-        <li>
-          <button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false">다크</button>
-        </li>
-      </ul>
-    </nav>
-  </div>
-</header>
+<div class="site-header-wrap">
+  <header class="site-header pixel-corners">
+    <div class="header-inner">
+      <a class="brand" href="{{ "/" | relURL }}"><span class="brand-title">{{ site.Title }}</span></a>
+      <nav class="site-nav" aria-label="주 메뉴">
+        <ul>
+          {{- $current := . }}
+          {{- range site.Menus.main }}
+          {{- $active := or ($current.IsMenuCurrent "main" .) ($current.HasMenuCurrent "main" .) }}
+          {{- with .Page }}{{ if and (not $active) (not .IsHome) }}{{ $active = $current.IsDescendant . }}{{ end }}{{ end }}
+          <li><a href="{{ .URL }}"{{ if $active }} aria-current="page"{{ end }}>{{ .Name }}</a></li>
+          {{- end }}
+          <li>
+            <button type="button" class="search-open" data-search-open aria-haspopup="dialog" aria-keyshortcuts="Meta+K Control+K" aria-label="검색 열기">검색<kbd class="search-kbd">⌘K</kbd></button>
+          </li>
+          <li>
+            <button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false">다크</button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+</div>

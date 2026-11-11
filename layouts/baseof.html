@@ -7,9 +7,15 @@
 </head>
 <body>
   {{ partial "header.html" . }}
+  {{ block "hero" . }}{{ end }}
   <main class="container" id="main">
     {{ block "main" . }}{{ end }}
   </main>
   {{ partial "footer.html" . }}
+  {{ partial "search.html" . }}
+  {{- /* 본문을 렌더링한 뒤에 확인해야 mermaid 코드 블록 렌더 훅이 남긴 표시를 읽을 수 있습니다. */}}
+  {{- if .Store.Get "hasMermaid" }}
+  {{ partial "mermaid.html" . }}
+  {{- end }}
 </body>
 </html>

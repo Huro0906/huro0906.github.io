@@ -1,15 +1,42 @@
 {{ define "main" }}
-{{- $toc := and (eq .Section "posts") (findRE `<h2[\s>]` .Content 1) }}
+{{- $isPost := eq .Section "posts" }}
+{{- $toc := and $isPost (findRE `<h2[\s>]` .Content 1) }}
+{{- if $isPost }}
+<div class="read-progress" aria-hidden="true"><div class="read-progress-bar" data-progress></div></div>
+{{- end }}
 <div class="post-layout{{ if $toc }} has-toc{{ end }}">
+  {{- if $isPost }}
+  {{- with partial "featured.html" . }}
+  {{- /* 원본 폭보다 큰 크기는 만들지 않습니다. */}}
+  {{- $src := . }}
+  {{- $widths := slice }}
+  {{- range slice 800 1200 1600 }}
+    {{- $w := math.Min . $src.Width | int }}
+    {{- if not (in $widths $w) }}{{ $widths = $widths | append $w }}{{ end }}
+  {{- end }}
+  {{- $srcset := slice }}
+  {{- $main := "" }}
+  {{- range $widths }}
+    {{- $img := $src.Process (printf "resize %dx webp" .) }}
+    {{- if or (not $main) (le $img.Width 1200) }}{{ $main = $img }}{{ end }}
+    {{- $srcset = $srcset | append (printf "%s %dw" $img.RelPermalink $img.Width) }}
+  {{- end }}
+  <figure class="post-featured">
+    <img src="{{ $main.RelPermalink }}"{{ if gt (len $srcset) 1 }} srcset="{{ delimit $srcset ", " }}" sizes="(min-width: 1100px) 864px, (min-width: 880px) 848px, calc(100vw - 32px)"{{ end }} width="{{ $main.Width }}" height="{{ $main.Height }}" alt="{{ $.Params.featured_alt | default $.Title }}" loading="eager" fetchpriority="high" decoding="async">
+  </figure>
+  {{- end }}
+  {{- end }}
   <header class="card post-header pixel-corners">
     <h1 class="post-title">{{ .Title }}</h1>
-    {{- if eq .Section "posts" }}
+    {{- if $isPost }}
     <p class="meta">
       <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006.01.02" }}</time>
       {{- with .GetTerms "categories" }}
       <span class="meta-sep" aria-hidden="true">/</span>
       {{- range . }}<a class="label" href="{{ .Permalink }}">{{ .LinkTitle }}</a>{{ end }}
       {{- end }}
+      <span class="meta-sep" aria-hidden="true">/</span>
+      <span class="reading-meta"><span>약 {{ .ReadingTime }}분</span><span>{{ .Plain | countrunes | lang.FormatNumber 0 }}자</span></span>
     </p>
     {{- with .GetTerms "tags" }}
     <ul class="tag-list" aria-label="태그">
@@ -26,10 +53,12 @@
     </details>
   </nav>
   {{- end }}
+  {{- if $isPost }}{{ partial "series.html" . }}{{ end }}
   <article class="post card prose">
     {{ .Content }}
   </article>
-  {{- if eq .Section "posts" }}
+  {{- if $isPost }}
+  {{ partial "related.html" . }}
   {{- $older := .PrevInSection }}
   {{- $newer := .NextInSection }}
   {{- if or $older $newer }}

@@ -1,0 +1,66 @@
+{{- /*
+  대표 이미지가 없는 글의 썸네일로 쓰는 좌우 대칭 픽셀 무늬입니다.
+  제목(없으면 slug)의 해시값으로 칸과 색을 정하므로, 같은 제목은 빌드할 때마다 같은 무늬가 되고
+  브라우저에서 따로 계산하거나 이미지를 내려받을 필요가 없습니다.
+  해시 정수를 2로 나눈 나머지를 차례로 읽어 왼쪽 4열 x 5행의 칸을 켜고, 오른쪽 4열은 거울상으로 복사합니다.
+  색은 pat-c1~pat-c7 클래스로만 지정해서 CSS 토큰(--pat-*)이 테마에 맞게 바꿉니다.
+*/ -}}
+{{- $key := . }}
+{{- $h1 := hash.FNV32a $key }}
+{{- $h2 := hash.FNV32a (printf "%s#fill" $key) }}
+{{- $h3 := hash.FNV32a (printf "%s#color" $key) }}
+{{- $h4 := hash.FNV32a (printf "%s#cells" $key) }}
+
+{{- /* 켜진 칸이 너무 적으면 두 번째 해시와 OR, 너무 많으면 AND 로 보정합니다. */ -}}
+{{- $n := $h1 }}
+{{- $count := 0 }}
+{{- range seq 20 }}
+  {{- if eq (mod $n 2) 1 }}{{ $count = add $count 1 }}{{ end }}
+  {{- $n = div $n 2 }}
+{{- end }}
+{{- $mode := "" }}
+{{- if lt $count 6 }}{{ $mode = "or" }}{{ else if gt $count 14 }}{{ $mode = "and" }}{{ end }}
+
+{{- $a := $h1 }}
+{{- $b := $h2 }}
+{{- $cells := slice }}
+{{- range $y := seq 0 4 }}
+  {{- range $x := seq 0 3 }}
+    {{- $on := eq (mod $a 2) 1 }}
+    {{- $extra := eq (mod $b 2) 1 }}
+    {{- if eq $mode "or" }}{{ $on = or $on $extra }}{{ else if eq $mode "and" }}{{ $on = and $on $extra }}{{ end }}
+    {{- if $on }}{{ $cells = $cells | append (dict "x" $x "y" $y) }}{{ end }}
+    {{- $a = div $a 2 }}
+    {{- $b = div $b 2 }}
+  {{- end }}
+{{- end }}
+{{- /* 보정한 뒤에도 칸이 모자라면 가운데 열을 채워 최소 개수를 맞춥니다. */ -}}
+{{- if lt (len $cells) 6 }}
+  {{- range $y := seq 0 4 }}
+    {{- if not (where (where $cells "y" $y) "x" 3) }}{{ $cells = $cells | append (dict "x" 3 "y" $y) }}{{ end }}
+  {{- end }}
+{{- end }}
+
+{{- /* 7개 강조색 중 2~3개를 고릅니다. 7이 소수라서 간격 step 으로 고른 색은 서로 겹치지 않습니다. */ -}}
+{{- $k := add 2 (mod $h3 2) }}
+{{- $c0 := mod (div $h3 2) 7 }}
+{{- $step := add 1 (mod (div $h3 14) 6) }}
+{{- $palette := slice $c0 (mod (add $c0 $step) 7) (mod (add $c0 (mul $step 2)) 7) | first $k }}
+
+{{- /* 칸의 약 60% 는 첫 색, 나머지는 다른 색을 씁니다. 고른 색이 모두 쓰이도록 앞의 두 칸과 마지막 칸은 색을 고정합니다. */ -}}
+{{- $last := sub (len $cells) 1 }}
+{{- $c := $h4 }}
+{{- $rects := slice }}
+{{- range $i, $cell := $cells }}
+  {{- $r := mod $c 5 }}
+  {{- $c = div $c 5 }}
+  {{- $idx := 0 }}
+  {{- if eq $r 3 }}{{ $idx = 1 }}{{ else if eq $r 4 }}{{ $idx = sub $k 1 }}{{ end }}
+  {{- if eq $i 0 }}{{ $idx = 1 }}{{ else if eq $i 1 }}{{ $idx = 0 }}{{ else if eq $i $last }}{{ $idx = sub $k 1 }}{{ end }}
+  {{- $cls := printf "pat-c%d" (add (index $palette $idx) 1) }}
+  {{- $px := add 8 (mul $cell.x 6) }}
+  {{- $py := add 3 (mul $cell.y 6) }}
+  {{- $rects = $rects | append (printf `<rect class="%s" x="%d" y="%d" width="6" height="6"/>` $cls $px $py) }}
+  {{- $rects = $rects | append (printf `<rect class="%s" x="%d" y="%d" width="6" height="6"/>` $cls (sub 50 (mul $cell.x 6)) $py) }}
+{{- end -}}
+<svg class="thumb-pattern" viewBox="0 0 64 36" shape-rendering="crispEdges" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><rect class="pat-bg" width="64" height="36"/>{{ delimit $rects "" | safeHTML }}</svg>

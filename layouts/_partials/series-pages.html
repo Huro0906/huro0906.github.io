@@ -1,0 +1,6 @@
+{{- /* 시리즈 term 을 받아 글 순서를 정합니다. series_order 가 있는 글을 그 값의 오름차순으로 먼저 두고, 없는 글은 날짜 오름차순으로 뒤에 붙입니다. */ -}}
+{{- $ordered := where .Pages "Params.series_order" "!=" nil }}
+{{- $rest := where .Pages "Params.series_order" "==" nil }}
+{{- $pages := sort $ordered "Params.series_order" }}
+{{- range $rest.ByDate }}{{ $pages = $pages | append . }}{{ end }}
+{{- return $pages }}

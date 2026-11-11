@@ -1,0 +1,17 @@
+{{- if eq .Type "alert" }}
+{{- $titles := dict "note" "참고" "tip" "팁" "important" "중요" "warning" "경고" "caution" "주의" }}
+{{- $type := .AlertType | lower }}
+{{- $title := .AlertTitle | default (index $titles $type) | default $type }}
+<div class="alert alert-{{ $type }}" role="note">
+  <p class="label alert-title">{{ $title }}</p>
+  {{ .Text }}
+</div>
+{{- else }}
+<blockquote
+  {{- range $k, $v := .Attributes }}
+    {{- if $v }}{{ printf " %s=%q" $k (string $v) | safeHTMLAttr }}{{ end }}
+  {{- end -}}
+>
+  {{ .Text }}
+</blockquote>
+{{- end }}

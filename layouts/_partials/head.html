@@ -23,7 +23,15 @@
 <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">
 {{- $js := resources.Get "js/theme-toggle.js" | minify | fingerprint }}
 <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
+{{- $header := resources.Get "js/header.js" | minify | fingerprint }}
+<script src="{{ $header.RelPermalink }}" integrity="{{ $header.Data.Integrity }}" defer></script>
+{{- $search := resources.Get "js/search.js" | minify | fingerprint }}
+<script src="{{ $search.RelPermalink }}" integrity="{{ $search.Data.Integrity }}" defer></script>
 {{- if .IsPage }}
 {{- $toc := resources.Get "js/toc.js" | minify | fingerprint }}
 <script src="{{ $toc.RelPermalink }}" integrity="{{ $toc.Data.Integrity }}" defer></script>
+{{- end }}
+{{- if and .IsPage (eq .Section "posts") }}
+{{- $progress := resources.Get "js/progress.js" | minify | fingerprint }}
+<script src="{{ $progress.RelPermalink }}" integrity="{{ $progress.Data.Integrity }}" defer></script>
 {{- end }}

@@ -2,20 +2,14 @@
 <header class="page-header">
   <h1>{{ .Title }}</h1>
 </header>
-{{- with .RegularPages }}
-{{- range .GroupByDate "2006" }}
-<section class="card archive-year">
-  <h2 class="label">{{ .Key }}</h2>
-  <ul class="archive-list">
-    {{- range .Pages }}
-    <li>
-      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "01.02" }}</time>
-      <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-    </li>
-    {{- end }}
-  </ul>
-</section>
-{{- end }}
+{{- $pag := .Paginate .RegularPages.ByDate.Reverse }}
+{{- with $pag.Pages }}
+<div class="card-grid">
+  {{- range . }}
+  {{ partial "post-card.html" . }}
+  {{- end }}
+</div>
+{{ partial "pagination.html" $pag }}
 {{- else }}
 <section class="card empty-state pixel-corners" data-empty-state>
   <p class="label">EMPTY</p>

@@ -1,0 +1,13 @@
+{{- /* 페이지 번들에서 기본 이름이 featured 인 첫 이미지를 돌려줍니다. 없으면 빈 값을 돌려줍니다. */ -}}
+{{- $exts := slice "png" "jpg" "jpeg" "webp" }}
+{{- $found := "" }}
+{{- range .Resources.ByType "image" }}
+  {{- if not $found }}
+    {{- $name := path.Base .Name | lower }}
+    {{- $ext := strings.TrimPrefix "." (path.Ext $name) }}
+    {{- if and (eq (strings.TrimSuffix (path.Ext $name) $name) "featured") (in $exts $ext) }}
+      {{- $found = . }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- return $found -}}

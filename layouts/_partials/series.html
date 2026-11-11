@@ -1,0 +1,39 @@
+{{- with .GetTerms "series" }}
+{{- $term := index . 0 }}
+{{- $pages := partial "series-pages.html" $term }}
+{{- $idx := -1 }}
+{{- range $i, $p := $pages }}{{ if eq $p.RelPermalink $.RelPermalink }}{{ $idx = $i }}{{ end }}{{ end }}
+{{- $total := len $pages }}
+<aside class="card series-box pixel-corners" aria-label="시리즈">
+  <p class="label">시리즈</p>
+  <p class="series-head">
+    <a class="series-name" href="{{ $term.RelPermalink }}">{{ $term.LinkTitle }}</a>
+    <span class="series-count">{{ add $idx 1 }} / {{ $total }}</span>
+  </p>
+  <ol class="series-list">
+    {{- range $i, $p := $pages }}
+    <li>
+      {{- if eq $i $idx }}
+      <span class="series-item is-current" aria-current="page">{{ $p.Title }}</span>
+      {{- else }}
+      <a class="series-item" href="{{ $p.RelPermalink }}">{{ $p.Title }}</a>
+      {{- end }}
+    </li>
+    {{- end }}
+  </ol>
+  {{- if gt $total 1 }}
+  <nav class="series-nav" aria-label="시리즈 이전 편과 다음 편">
+    {{- if gt $idx 0 }}
+    <a class="btn" href="{{ (index $pages (sub $idx 1)).RelPermalink }}" rel="prev">이전 편</a>
+    {{- else }}
+    <span class="btn is-disabled" aria-disabled="true">이전 편</span>
+    {{- end }}
+    {{- if lt (add $idx 1) $total }}
+    <a class="btn" href="{{ (index $pages (add $idx 1)).RelPermalink }}" rel="next">다음 편</a>
+    {{- else }}
+    <span class="btn is-disabled" aria-disabled="true">다음 편</span>
+    {{- end }}
+  </nav>
+  {{- end }}
+</aside>
+{{- end }}

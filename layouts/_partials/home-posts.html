@@ -1,0 +1,2 @@
+{{- /* 홈의 hero 블록과 main 블록이 같은 인자로 .Paginate 를 부르도록 글 목록을 한곳에서 만듭니다. */ -}}
+{{- return (where site.RegularPages "Section" "posts").ByDate.Reverse -}}
