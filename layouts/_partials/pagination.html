@@ -1,0 +1,16 @@
+{{- $pag := . }}
+{{- if gt $pag.TotalPages 1 }}
+<nav class="pagination" aria-label="페이지 이동">
+  {{- with $pag.Prev }}
+  <a class="btn" href="{{ .URL }}" rel="prev">이전</a>
+  {{- else }}
+  <span class="btn is-disabled" aria-disabled="true">이전</span>
+  {{- end }}
+  <span class="label pagination-status">{{ $pag.PageNumber }} / {{ $pag.TotalPages }}</span>
+  {{- with $pag.Next }}
+  <a class="btn" href="{{ .URL }}" rel="next">다음</a>
+  {{- else }}
+  <span class="btn is-disabled" aria-disabled="true">다음</span>
+  {{- end }}
+</nav>
+{{- end }}

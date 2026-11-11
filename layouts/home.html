@@ -1,0 +1,22 @@
+{{ define "main" }}
+<section class="intro card pixel-corners">
+  <h1 class="intro-title">{{ site.Title }}</h1>
+  {{- with site.Params.subtitle }}<p class="intro-subtitle">{{ . }}</p>{{ end }}
+</section>
+{{- $pages := where site.RegularPages "Section" "posts" }}
+{{- if $pages }}
+{{- $pag := .Paginate $pages.ByDate.Reverse }}
+<div class="post-list">
+  {{- range $pag.Pages }}
+  {{ partial "post-card.html" . }}
+  {{- end }}
+</div>
+{{ partial "pagination.html" $pag }}
+{{- else }}
+<section class="card empty-state pixel-corners" data-empty-state>
+  <p class="label">EMPTY</p>
+  <h2>아직 올라온 글이 없습니다.</h2>
+  <p>첫 글을 준비하고 있습니다. 조금만 기다려 주세요.</p>
+</section>
+{{- end }}
+{{ end }}

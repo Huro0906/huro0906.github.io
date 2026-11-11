@@ -1,0 +1,44 @@
+{{ define "main" }}
+<article class="post">
+  <header class="card post-header pixel-corners">
+    <h1 class="post-title">{{ .Title }}</h1>
+    {{- if eq .Section "posts" }}
+    <p class="meta">
+      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006.01.02" }}</time>
+      {{- with .GetTerms "categories" }}
+      <span class="meta-sep" aria-hidden="true">/</span>
+      {{- range . }}<a class="label" href="{{ .Permalink }}">{{ .LinkTitle }}</a>{{ end }}
+      {{- end }}
+    </p>
+    {{- with .GetTerms "tags" }}
+    <ul class="tag-list" aria-label="태그">
+      {{- range . }}<li><a class="tag" href="{{ .Permalink }}">#{{ .LinkTitle }}</a></li>{{ end }}
+    </ul>
+    {{- end }}
+    {{- end }}
+  </header>
+  {{- if and (eq .Section "posts") (findRE `<h2[\s>]` .Content 1) }}
+  <nav class="card toc" aria-label="목차">
+    <p class="label">목차</p>
+    {{ .TableOfContents }}
+  </nav>
+  {{- end }}
+  <div class="card prose">
+    {{ .Content }}
+  </div>
+  {{- if eq .Section "posts" }}
+  {{- $older := .PrevInSection }}
+  {{- $newer := .NextInSection }}
+  {{- if or $older $newer }}
+  <nav class="post-nav" aria-label="이전 글과 다음 글">
+    {{- with $older }}
+    <a class="card post-nav-link" href="{{ .RelPermalink }}" rel="prev" data-nav="prev"><span class="label">이전 글</span><span class="post-nav-title">{{ .Title }}</span></a>
+    {{- end }}
+    {{- with $newer }}
+    <a class="card post-nav-link is-next" href="{{ .RelPermalink }}" rel="next" data-nav="next"><span class="label">다음 글</span><span class="post-nav-title">{{ .Title }}</span></a>
+    {{- end }}
+  </nav>
+  {{- end }}
+  {{- end }}
+</article>
+{{ end }}

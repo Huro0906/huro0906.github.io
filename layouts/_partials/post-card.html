@@ -1,0 +1,11 @@
+<article class="card post-card">
+  <h2 class="post-card-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+  <p class="meta">
+    <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006.01.02" }}</time>
+    {{- with .GetTerms "categories" }}
+    <span class="meta-sep" aria-hidden="true">/</span>
+    {{- range . }}<a class="label" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}
+    {{- end }}
+  </p>
+  {{- with .Summary }}<p class="post-card-summary">{{ . | plainify | strings.Truncate 140 }}</p>{{ end }}
+</article>
