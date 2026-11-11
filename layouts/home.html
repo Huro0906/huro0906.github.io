@@ -1,0 +1,23 @@
+{{ define "hero" }}
+{{- $pag := .Paginate (partial "home-posts.html" .) }}
+{{- if eq $pag.PageNumber 1 }}{{ partial "hero.html" . }}{{ end }}
+{{ end }}
+
+{{ define "main" }}
+{{- $pag := .Paginate (partial "home-posts.html" .) }}
+{{- with $pag.Pages }}
+<h2 class="label section-label">최근 글</h2>
+<div class="card-grid">
+  {{- range . }}
+  {{ partial "post-card.html" . }}
+  {{- end }}
+</div>
+{{ partial "pagination.html" $pag }}
+{{- else }}
+<section class="card empty-state pixel-corners" data-empty-state>
+  <p class="label">EMPTY</p>
+  <h2>아직 올라온 글이 없습니다.</h2>
+  <p>첫 글을 준비하고 있습니다. 조금만 기다려 주세요.</p>
+</section>
+{{- end }}
+{{ end }}

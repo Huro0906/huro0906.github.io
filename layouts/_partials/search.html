@@ -1,0 +1,10 @@
+<dialog class="search-dialog card pixel-corners" data-search data-index-url="{{ partialCached "search-index.html" . }}" aria-label="검색">
+  <div class="search-head">
+    <label class="label" for="search-input">검색</label>
+    <button type="button" class="search-close" data-search-close aria-label="검색 닫기">Esc</button>
+  </div>
+  <input class="search-input" id="search-input" type="search" placeholder="제목, 태그, 본문에서 찾기" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="search-results" aria-autocomplete="list" data-search-input>
+  <p class="search-status" role="status" aria-live="polite" data-search-status></p>
+  <ul class="search-results" id="search-results" role="listbox" aria-label="검색 결과" data-search-results></ul>
+  <p class="search-hint">↑↓ 이동 · Enter 열기 · Esc 닫기</p>
+</dialog>

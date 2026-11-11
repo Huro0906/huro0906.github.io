@@ -1,0 +1,24 @@
+{{- /* 같은 시리즈 글은 시리즈 상자에 이미 나오므로 관련 글에서 뺍니다. */ -}}
+{{- $mine := slice }}
+{{- range .GetTerms "series" }}{{ $mine = $mine | append .RelPermalink }}{{ end }}
+{{- $candidates := slice }}
+{{- range site.RegularPages.Related . }}
+  {{- $same := false }}
+  {{- range .GetTerms "series" }}{{ if in $mine .RelPermalink }}{{ $same = true }}{{ end }}{{ end }}
+  {{- if not $same }}{{ $candidates = $candidates | append . }}{{ end }}
+{{- end }}
+{{- with first 3 $candidates }}
+<section class="related" aria-labelledby="related-title">
+  <h2 class="label section-label" id="related-title">관련 글</h2>
+  <ul class="related-list">
+    {{- range . }}
+    <li>
+      <a class="card related-card" href="{{ .RelPermalink }}">
+        <span class="related-card-title">{{ .Title }}</span>
+        <time class="meta" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006.01.02" }}</time>
+      </a>
+    </li>
+    {{- end }}
+  </ul>
+</section>
+{{- end }}

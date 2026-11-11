@@ -1,0 +1,15 @@
+{{ define "main" }}
+<header class="page-header">
+  <p class="label">{{ with .Parent }}{{ .Title }}{{ end }}</p>
+  <h1>{{ .Title }}</h1>
+</header>
+{{- $pages := .Pages.ByDate.Reverse }}
+{{- if eq .Data.Plural "series" }}{{ $pages = partial "series-pages.html" . }}{{ end }}
+{{- $pag := .Paginate $pages }}
+<div class="card-grid">
+  {{- range $pag.Pages }}
+  {{ partial "post-card.html" . }}
+  {{- end }}
+</div>
+{{ partial "pagination.html" $pag }}
+{{ end }}

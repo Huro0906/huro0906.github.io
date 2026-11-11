@@ -1,0 +1,17 @@
+{{ define "main" }}
+<header class="page-header">
+  <h1>{{ .Title }}</h1>
+</header>
+{{- with .Data.Terms.ByCount }}
+<ul class="card term-cloud">
+  {{- range . }}
+  <li><a class="tag" href="{{ .Page.RelPermalink }}">{{ .Page.LinkTitle }}<span class="tag-count">{{ .Count }}</span></a></li>
+  {{- end }}
+</ul>
+{{- else }}
+<section class="card empty-state pixel-corners" data-empty-state>
+  <p class="label">EMPTY</p>
+  <p>아직 등록된 {{ .Title }}가 없습니다.</p>
+</section>
+{{- end }}
+{{ end }}

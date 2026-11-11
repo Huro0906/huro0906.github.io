@@ -1,0 +1,40 @@
+{{- $page := . }}
+<article class="card post-card">
+  <div class="post-card-thumb">
+    {{- with partial "featured.html" $page }}
+    {{- /* 원본보다 크게 늘리지 않도록, 16:9 로 잘랐을 때의 원본 폭을 넘지 않는 크기만 만듭니다.
+       후보가 하나뿐이면 srcset 을 쓰지 않습니다. sizes 에 맞춰 늘려 그리지 않고 원본 크기를 그대로 알리기 위해서입니다. */}}
+    {{- $src := . }}
+    {{- $max := math.Min $src.Width (div (mul $src.Height 16) 9) | int }}
+    {{- $widths := slice }}
+    {{- range slice 480 960 }}
+      {{- $w := math.Min . $max | int }}
+      {{- if not (in $widths $w) }}{{ $widths = $widths | append $w }}{{ end }}
+    {{- end }}
+    {{- $first := "" }}
+    {{- $srcset := slice }}
+    {{- range $widths }}
+      {{- $img := $src.Process (printf "fill %dx%d Center webp" . (div (mul . 9) 16)) }}
+      {{- if not $first }}{{ $first = $img }}{{ end }}
+      {{- $srcset = $srcset | append (printf "%s %dw" $img.RelPermalink $img.Width) }}
+    {{- end }}
+    <img src="{{ $first.RelPermalink }}"{{ if gt (len $srcset) 1 }} srcset="{{ delimit $srcset ", " }}" sizes="(min-width: 1024px) 368px, (min-width: 601px) 50vw, 100vw"{{ end }} width="{{ $first.Width }}" height="{{ $first.Height }}" alt="{{ $page.Params.featured_alt | default $page.Title }}" loading="lazy" decoding="async">
+    {{- else }}
+    {{- $key := $page.Title }}
+    {{- if not $key }}{{ $key = $page.Slug }}{{ end }}
+    {{- if and (not $key) $page.File }}{{ $key = $page.File.ContentBaseName }}{{ end }}
+    {{ partialCached "thumb-pattern.html" $key $key }}
+    {{- end }}
+  </div>
+  <div class="post-card-body">
+    <h2 class="post-card-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+    <p class="meta">
+      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006.01.02" }}</time>
+      {{- with .GetTerms "categories" }}
+      <span class="meta-sep" aria-hidden="true">/</span>
+      {{- range . }}<a class="label" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}
+      {{- end }}
+    </p>
+    {{- with .Summary }}<p class="post-card-summary">{{ . | plainify | strings.Truncate 140 }}</p>{{ end }}
+  </div>
+</article>

@@ -1,0 +1,19 @@
+{{ define "main" }}
+<header class="page-header">
+  <h1>{{ .Title }}</h1>
+</header>
+{{- $pag := .Paginate .RegularPages.ByDate.Reverse }}
+{{- with $pag.Pages }}
+<div class="card-grid">
+  {{- range . }}
+  {{ partial "post-card.html" . }}
+  {{- end }}
+</div>
+{{ partial "pagination.html" $pag }}
+{{- else }}
+<section class="card empty-state pixel-corners" data-empty-state>
+  <p class="label">EMPTY</p>
+  <p>아직 올라온 글이 없습니다.</p>
+</section>
+{{- end }}
+{{ end }}

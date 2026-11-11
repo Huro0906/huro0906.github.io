@@ -1,0 +1,16 @@
+{{- /* 검색 팝업이 처음 열릴 때 불러오는 색인입니다. 사이트 전체에서 한 번만 만들도록 partialCached 로 부릅니다. */ -}}
+{{- $items := slice }}
+{{- range site.RegularPages }}
+  {{- $items = $items | append (dict
+    "title" .Title
+    "url" .RelPermalink
+    "date" (.Date.Format "2006-01-02")
+    "tags" (.Params.tags | default slice)
+    "categories" (.Params.categories | default slice)
+    "series" (.Params.series | default slice)
+    "summary" (.Summary | plainify | htmlUnescape | strings.Truncate 160)
+    "content" (.Plain | htmlUnescape | strings.Truncate 4000)
+  ) }}
+{{- end }}
+{{- $index := resources.FromString "search-index.json" ($items | jsonify) | fingerprint }}
+{{- return $index.RelPermalink }}
